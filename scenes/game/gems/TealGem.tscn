@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://wydxphlt5ndk"]
 
-[ext_resource type="Texture2D" uid="uid://j60rlpte57vt" path="res://assets/gems/teal_tile.svg" id="1_3vyab"]
+[ext_resource type="Texture2D" uid="uid://j60rlpte57vt" path="res://assets/components/GemManager/gems/teal_tile.svg" id="1_3vyab"]
 [ext_resource type="Script" uid="uid://bhbp74ta0yoy7" path="res://scenes/game/gems/gem_base.gd" id="1_nam3g"]
 
 [node name="TealGem" type="Node2D"]

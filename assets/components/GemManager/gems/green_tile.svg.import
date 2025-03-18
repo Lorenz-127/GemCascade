@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://chmgbr0jhun2p"
-path="res://.godot/imported/yellow_tile.svg-e72decf313a3d400c052d49bc473b8df.ctex"
+uid="uid://cboppivvubdo5"
+path="res://.godot/imported/green_tile.svg-ea73945f895c41af09fca3cd7c660f96.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gems/yellow_tile.svg"
-dest_files=["res://.godot/imported/yellow_tile.svg-e72decf313a3d400c052d49bc473b8df.ctex"]
+source_file="res://assets/components/GemManager/gems/green_tile.svg"
+dest_files=["res://.godot/imported/green_tile.svg-ea73945f895c41af09fca3cd7c660f96.ctex"]
 
 [params]
 

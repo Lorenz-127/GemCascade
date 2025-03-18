@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dov1f7m334p3m"
-path="res://.godot/imported/blue_tile.svg-3ec4f76e307cf005c5fd9ca4a018bc9d.ctex"
+uid="uid://clhgjb8saer8v"
+path="res://.godot/imported/purple_tile.svg-f67679b30ff65b4b29ba547e08978b6d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/gems/blue_tile.svg"
-dest_files=["res://.godot/imported/blue_tile.svg-3ec4f76e307cf005c5fd9ca4a018bc9d.ctex"]
+source_file="res://assets/components/GemManager/gems/purple_tile.svg"
+dest_files=["res://.godot/imported/purple_tile.svg-f67679b30ff65b4b29ba547e08978b6d.ctex"]
 
 [params]
 

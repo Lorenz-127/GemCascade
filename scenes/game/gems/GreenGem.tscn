@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cwt38ctb2k12v"]
 
 [ext_resource type="Script" uid="uid://bhbp74ta0yoy7" path="res://scenes/game/gems/gem_base.gd" id="1_pg5qu"]
-[ext_resource type="Texture2D" uid="uid://cboppivvubdo5" path="res://assets/gems/green_tile.svg" id="1_ynmkp"]
+[ext_resource type="Texture2D" uid="uid://cboppivvubdo5" path="res://assets/components/GemManager/gems/green_tile.svg" id="1_ynmkp"]
 
 [node name="GreenGem" type="Node2D"]
 script = ExtResource("1_pg5qu")
