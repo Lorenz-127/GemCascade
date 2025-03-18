@@ -3,7 +3,7 @@ extends Node2D
 
 # References to components
 @onready var grid_manager: GridManager = $GridManager
-@onready var gem_manager: GemManager = $GemManager
+@onready var gem_manager: GemManager = $GridManager/GemManager
 @onready var input_handler: InputHandler = $InputHandler
 @onready var match_detector: MatchDetector = $MatchDetector
 @onready var board_controller: BoardController = $BoardController
@@ -24,13 +24,13 @@ func initialize_components():
 	# Grid manager must be first as other components depend on it
 	grid_manager.initialize()
 	
-	# Initialize gem manager with reference to grid manager
-	gem_manager.initialize(grid_manager)
+	# GemManager now gets reference to its parent instead of grid_manager
+	gem_manager.initialize()
 	
-	# Initialize remaining components with proper dependencies
-	match_detector.initialize(grid_manager, gem_manager)
-	input_handler.initialize(grid_manager, gem_manager)
-	board_controller.initialize(grid_manager, gem_manager, match_detector)
+	# For other components, access gem_manager through grid_manager if needed
+	match_detector.initialize(grid_manager, grid_manager.get_node("GemManager"))
+	input_handler.initialize(grid_manager, grid_manager.get_node("GemManager"))
+	board_controller.initialize(grid_manager, grid_manager.get_node("GemManager"), match_detector)
 	score_manager.initialize()
 
 # Connect all signals between components

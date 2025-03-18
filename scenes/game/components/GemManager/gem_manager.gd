@@ -1,5 +1,5 @@
 class_name GemManager
-extends Node
+extends Node2D
 
 # Signal for gem creation
 signal gem_created(gem, position)
@@ -15,8 +15,8 @@ var gem_pool = []  # For object pooling
 func _ready():
 	game_board = get_parent()
 
-func initialize(grid_mgr: GridManager):
-	grid_manager = grid_mgr
+func initialize():
+	grid_manager = get_parent()
 	
 	# Load gem scenes
 	possible_gems = [
@@ -67,10 +67,15 @@ func create_gem(type: int, column: int, row: int):
 	# Get a gem from the pool
 	var new_gem = get_gem_from_pool(type)
 	
-	# Position the gem
-	var pos = grid_manager.grid_to_pixel(column, row)
-	pos.x += grid_manager.cell_size / 2
-	pos.y += grid_manager.cell_size / 2
+	# Get the position from GridManager
+	var cell_size = get_parent().cell_size  # Get cell size from parent (GridManager)
+	var pos = Vector2(column * cell_size, row * cell_size)
+	
+	# Critical: Center the gem in the cell
+	pos.x += cell_size / 2
+	pos.y += cell_size / 2
+	
+	# Set the gem position
 	new_gem.position = pos
 	
 	# Scale the gem to fit the cell

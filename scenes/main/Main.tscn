@@ -81,7 +81,6 @@ size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_nha0i")
 
 [node name="GameBoard" parent="MarginContainer/VBoxContainer/HBoxContainer/GameContainer/GamePanel" instance=ExtResource("2_nha0i")]
-position = Vector2(30, 30)
 
 [node name="RightContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(440, 960)

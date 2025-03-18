@@ -12,10 +12,9 @@
 script = ExtResource("1_l2lg6")
 
 [node name="GridManager" type="Node2D" parent="."]
-position = Vector2(30, 30)
 script = ExtResource("1_7727t")
 
-[node name="GemManager" type="Node2D" parent="GridManager"]
+[node name="GemManager" type="Node" parent="GridManager"]
 script = ExtResource("2_l2lg6")
 
 [node name="InputHandler" type="Node" parent="."]

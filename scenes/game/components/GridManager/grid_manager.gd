@@ -36,6 +36,7 @@ func get_grid_dimensions() -> Vector2i:
 	
 # Converts grid coordinates to pixel position
 func grid_to_pixel(column: int, row: int) -> Vector2:
+	# Ensure this returns coordinates relative to GridManager's position
 	var pixel_x = column * cell_size
 	var pixel_y = row * cell_size
 	return Vector2(pixel_x, pixel_y)
