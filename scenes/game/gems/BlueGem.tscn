@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://bo5vw6x3h4avw"]
+
+[ext_resource type="Script" uid="uid://bhbp74ta0yoy7" path="res://scenes/game/gems/gem_base.gd" id="1_1536p"]
+[ext_resource type="Texture2D" uid="uid://dov1f7m334p3m" path="res://assets/gems/blue_tile.svg" id="1_ge3dq"]
+
+[node name="BlueGem" type="Node2D"]
+script = ExtResource("1_1536p")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_ge3dq")

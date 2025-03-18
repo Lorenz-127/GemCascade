@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cu4o7ytvk6ktq"]
+
+[ext_resource type="Script" uid="uid://bhbp74ta0yoy7" path="res://scenes/game/gems/gem_base.gd" id="1_ecdd8"]
+[ext_resource type="Texture2D" uid="uid://clhgjb8saer8v" path="res://assets/gems/purple_tile.svg" id="1_vml4u"]
+
+[node name="PurpleGem" type="Node2D"]
+script = ExtResource("1_ecdd8")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_vml4u")

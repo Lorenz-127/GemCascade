@@ -1,0 +1,11 @@
+<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tealGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6cdbaf" />
+      <stop offset="100%" stop-color="#2e7b64" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Diamond shape using the gradient -->
+  <polygon points="32,4 60,32 32,60 4,32" fill="url(#tealGradient)" />
+</svg>

@@ -1,0 +1,92 @@
+[gd_scene load_steps=7 format=3 uid="uid://dyvkyakiiq2v5"]
+
+[ext_resource type="PackedScene" uid="uid://b1sqt4ejt7xo0" path="res://scenes/ui/left_ui.tscn" id="1_u1xfj"]
+[ext_resource type="PackedScene" uid="uid://blrd8p8ppdx3k" path="res://scenes/game/GameGrid.tscn" id="2_nha0i"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vyk5b"]
+bg_color = Color(0.160784, 0.160784, 0.27451, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_u1xfj"]
+bg_color = Color(0.160784, 0.160784, 0.27451, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nha0i"]
+bg_color = Color(0.160784, 0.160784, 0.27451, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q24mn"]
+bg_color = Color(0.160784, 0.160784, 0.27451, 1)
+
+[node name="Main" type="Node"]
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="TitlePanel" type="Panel" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 60)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_vyk5b")
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/TitlePanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -11.5
+offset_right = 20.0
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 36
+text = "Gem Cascade"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="LeftContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(440, 960)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="LeftPanel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_u1xfj")
+
+[node name="LeftUI" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftContainer/LeftPanel" instance=ExtResource("1_u1xfj")]
+layout_mode = 1
+
+[node name="GameContainer" type="CenterContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(960, 960)
+layout_mode = 2
+
+[node name="GamePanel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainer/GameContainer"]
+custom_minimum_size = Vector2(960, 960)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_nha0i")
+
+[node name="GameGrid" parent="MarginContainer/VBoxContainer/HBoxContainer/GameContainer" instance=ExtResource("2_nha0i")]
+
+[node name="RightContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(440, 960)
+layout_mode = 2
+
+[node name="RightPanel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainer/RightContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_q24mn")
