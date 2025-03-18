@@ -9,12 +9,12 @@ var current_state = GameState.WAITING_INPUT
 
 
 @onready var possible_gems = [
-	preload("res://scenes/game/gems/RedGem.tscn"),
-	preload("res://scenes/game/gems/BlueGem.tscn"),
-	preload("res://scenes/game/gems/GreenGem.tscn"),
-	preload("res://scenes/game/gems/TealGem.tscn"),
-	preload("res://scenes/game/gems/PurpleGem.tscn"),
-	preload("res://scenes/game/gems/YellowGem.tscn"),
+	preload("res://assets/components/GemManager/gems/blue_tile.svg"),
+	preload("res://assets/components/GemManager/gems/green_tile.svg"),
+	preload("res://assets/components/GemManager/gems/purple_tile.svg"),
+	preload("res://assets/components/GemManager/gems/red_tile.svg"),
+	preload("res://assets/components/GemManager/gems/teal_tile.svg"),
+	preload("res://assets/components/GemManager/gems/yellow_tile.svg"),
 ]
 
 var all_gems = []
