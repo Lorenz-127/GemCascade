@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://uv5m3x5yewjh"]
 
-[ext_resource type="Texture2D" uid="uid://f5em6user2n1" path="res://assets/components/GemManager/gems/red_tile.svg" id="1_cvfse"]
+[ext_resource type="Texture2D" path="res://assets/components/GemManager/gems/red_tile.svg" id="1_cvfse"]
 [ext_resource type="Script" uid="uid://bhbp74ta0yoy7" path="res://scenes/game/gems/gem_base.gd" id="1_kfrs5"]
 
 [node name="RedGem" type="Node2D"]
