@@ -87,12 +87,21 @@ func process_player_move(gem1, gem2):
 	emit_signal("swap_animation_completed")
 	
 	# Check if a special gem was activated
+	# Check if a special gem was activated
 	if is_special_gem1 or is_special_gem2:
 		# Activate the special gem
 		if is_special_gem1:
-			await activate_special_gem(gem1, pos2)  # Position after swap
+			if gem1.special_type == "color_bomb":
+				# Pass the color of the other gem for color bomb
+				await activate_special_gem(gem1, pos2, gem2.type)
+			else:
+				await activate_special_gem(gem1, pos2)
 		else:
-			await activate_special_gem(gem2, pos1)  # Position after swap
+			if gem2.special_type == "color_bomb":
+				# Pass the color of the other gem for color bomb
+				await activate_special_gem(gem2, pos1, gem1.type)
+			else:
+				await activate_special_gem(gem2, pos1)
 			
 		# Process the turn sequence
 		process_turn_sequence()
@@ -564,7 +573,7 @@ func _queue_special_gem_creation(x: int, y: int, special_type: String, orientati
 	})
 
 # Activate a special gem based on its type
-func activate_special_gem(gem, position: Vector2i):
+func activate_special_gem(gem, position: Vector2i, target_color = null):
 	print("Activating special gem: ", gem.special_type, " at ", position)
 	
 	# Call gem's activation animation
@@ -579,11 +588,12 @@ func activate_special_gem(gem, position: Vector2i):
 			# Clear both row and column
 			await activate_cross_blast(position.x, position.y)
 		"color_bomb":
-			# Clear all gems of matching color
-			var target_color = gem.type  # Use gem's color as default
-			await activate_color_bomb(position.x, position.y, target_color)
+			# If we have a target color (from a swap), use it
+			# Otherwise use the gem's own color
+			var color_to_clear = target_color if target_color != null else gem.type
+			await activate_color_bomb(position.x, position.y, color_to_clear)
 		"super_bomb":
-			# Clear a large area (radius blast)
+			# Clear the entire board
 			await activate_super_bomb(position.x, position.y)
 	
 	# Mark the special gem itself as matched for removal
@@ -708,21 +718,16 @@ func activate_color_bomb(x: int, y: int, target_color: int):
 
 # Activate super bomb effect (clear gems in radius)
 func activate_super_bomb(x: int, y: int, radius: int = 2):
-	print("Activating super bomb at: ", Vector2i(x, y), " with radius: ", radius)
+	print("Activating super bomb at: ", Vector2i(x, y))
 	
 	var dims = grid_manager.get_grid_dimensions()
 	
-	# Clear gems in a radius around the position
-	for col in range(max(0, x - radius), min(dims.x, x + radius + 1)):
-		for row in range(max(0, y - radius), min(dims.y, y + radius + 1)):
-			# Calculate distance from center
-			var distance = Vector2i(col, row).distance_to(Vector2i(x, y))
-			
-			# If within radius, clear the gem
-			if distance <= radius:
-				var gem = grid_manager.get_gem_at(col, row)
-				if gem != null and !gem.matched:
-					gem.matched = true
+	# Clear ALL gems on the board instead of just a radius
+	for col in range(dims.x):
+		for row in range(dims.y):
+			var gem = grid_manager.get_gem_at(col, row)
+			if gem != null and !gem.matched:
+				gem.matched = true
 	
 	# Wait a moment for visual effect
 	await get_tree().create_timer(0.2).timeout

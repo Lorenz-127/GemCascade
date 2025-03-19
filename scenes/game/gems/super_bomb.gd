@@ -82,21 +82,25 @@ func play_super_bomb_animation():
 func create_circle(radius: float, color: Color) -> Node2D:
 	var circle = Node2D.new()
 	
-	circle.draw_circle = func(draw_radius, draw_color):
-		var circle_points = PackedVector2Array()
-		for i in range(36):
-			var angle = i * PI * 2 / 36
-			circle_points.append(Vector2(cos(angle) * draw_radius, sin(angle) * draw_radius))
-		draw_colored_polygon(circle_points, draw_color)
+	# Add properties as metadata
+	circle.set_meta("radius", radius)
+	circle.set_meta("color", color)
 	
-	# Override _draw method
-	circle.set_script(GDScript.new())
-	circle.script.source_code = """
-	extends Node2D
-	var draw_circle = null
-	func _draw():
-		if draw_circle:
-			draw_circle.call(%s, %s)
-	""" % [radius, color]
+	# Create a simpler script
+	var script = GDScript.new()
+	script.source_code = """
+extends Node2D
+
+func _draw():
+	var radius = get_meta("radius")
+	var color = get_meta("color")
 	
+	var circle_points = PackedVector2Array()
+	for i in range(36):
+		var angle = i * PI * 2 / 36
+		circle_points.append(Vector2(cos(angle) * radius, sin(angle) * radius))
+	draw_colored_polygon(circle_points, color)
+"""
+	
+	circle.set_script(script)
 	return circle
