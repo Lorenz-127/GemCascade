@@ -94,6 +94,10 @@ func check_for_matches_at(x: int, y: int) -> bool:
 		else:
 			break
 	
+	# Add debug print for matches of 4+
+	if horizontal_count >= 4 or vertical_count >= 4:
+		print("FOUND MATCH OF LENGTH: H=" + str(horizontal_count) + " V=" + str(vertical_count) + " at " + str(Vector2i(x, y)))
+	
 	# Return true if we found at least 3 in a row or column
 	return horizontal_count >= 3 or vertical_count >= 3
 
@@ -110,6 +114,7 @@ func check_board_for_matches() -> bool:
 # Marks all matched gems for removal
 # Marks all matched gems for removal and identifies special matches
 func mark_matched_gems():
+	print("==== MARK MATCHED GEMS CALLED ====")
 	var found_matches = false
 	var dims = grid_manager.get_grid_dimensions()
 	
@@ -133,6 +138,8 @@ func mark_matched_gems():
 				if current_type == -1 or gem.type != current_type:
 					# Process any prior match
 					if current_match.size() >= 3:
+						# Add debug print to confirm process_match is called
+						print("CALLING process_match WITH MATCH LENGTH: " + str(current_match.size()))
 						# Use process_match instead of directly handling here
 						process_match(current_match, current_type, "horizontal")
 						found_matches = true

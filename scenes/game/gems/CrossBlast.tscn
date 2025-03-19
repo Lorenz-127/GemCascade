@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://day7nnd8vrxaa"]
 
-[ext_resource type="Script" uid="uid://basonu63324ms" path="res://scenes/game/gems/cross_blast.gd" id="1_mwx30"]
-[ext_resource type="Texture2D" uid="uid://cl42tfantosh" path="res://assets/components/GemManager/specials/cross_blast.svg" id="1_y2nwx"]
+[ext_resource type="Script" uid="uid://ortx8bpbc3rt" path="res://scenes/game/gems/cross_blast.gd" id="1_mwx30"]
+[ext_resource type="Texture2D" uid="uid://b5br4t7ee5w1i" path="res://assets/components/GemManager/specials/cross_blast.svg" id="1_y2nwx"]
 
 [node name="CrossBlast" type="Node2D"]
 script = ExtResource("1_mwx30")
