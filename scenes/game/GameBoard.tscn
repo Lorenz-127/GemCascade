@@ -1,0 +1,31 @@
+[gd_scene load_steps=8 format=3 uid="uid://cx7p2rekgck0h"]
+
+[ext_resource type="Script" uid="uid://dt22xnxst7g5j" path="res://scenes/game/components/GridManager/grid_manager.gd" id="1_7727t"]
+[ext_resource type="Script" uid="uid://ggu74oa463so" path="res://scenes/game/game_board.gd" id="1_l2lg6"]
+[ext_resource type="Script" uid="uid://c8xsmpcgcnjvh" path="res://scenes/game/components/GemManager/gem_manager.gd" id="2_l2lg6"]
+[ext_resource type="Script" uid="uid://ceuk4bsaruuyy" path="res://scenes/game/components/InputHandler/input_handler.gd" id="3_omrjw"]
+[ext_resource type="Script" uid="uid://b3q0hryq0h3kr" path="res://scenes/game/components/MatchDetector/match_detector.gd" id="4_a1fc0"]
+[ext_resource type="Script" uid="uid://itxwd1mrdexn" path="res://scenes/game/components/BoardController/board_controller.gd" id="5_p38x3"]
+[ext_resource type="Script" uid="uid://bih5mlksunwec" path="res://scenes/game/components/ScoreManager/score_manager.gd" id="6_xdd0y"]
+
+[node name="GameBoard" type="Node2D"]
+script = ExtResource("1_l2lg6")
+
+[node name="GridManager" type="Node2D" parent="."]
+position = Vector2(30, 30)
+script = ExtResource("1_7727t")
+
+[node name="GemManager" type="Node2D" parent="GridManager"]
+script = ExtResource("2_l2lg6")
+
+[node name="InputHandler" type="Node" parent="."]
+script = ExtResource("3_omrjw")
+
+[node name="MatchDetector" type="Node" parent="."]
+script = ExtResource("4_a1fc0")
+
+[node name="BoardController" type="Node" parent="."]
+script = ExtResource("5_p38x3")
+
+[node name="ScoreManager" type="Node" parent="."]
+script = ExtResource("6_xdd0y")

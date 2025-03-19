@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://dyvkyakiiq2v5"]
 
 [ext_resource type="PackedScene" uid="uid://b1sqt4ejt7xo0" path="res://scenes/ui/left_ui.tscn" id="1_u1xfj"]
-[ext_resource type="PackedScene" uid="uid://blrd8p8ppdx3k" path="res://scenes/game/GameGrid.tscn" id="2_nha0i"]
+[ext_resource type="PackedScene" uid="uid://cx7p2rekgck0h" path="res://scenes/game/GameBoard.tscn" id="2_nha0i"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vyk5b"]
 bg_color = Color(0.160784, 0.160784, 0.27451, 1)
@@ -80,7 +80,7 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_styles/panel = SubResource("StyleBoxFlat_nha0i")
 
-[node name="GameGrid" parent="MarginContainer/VBoxContainer/HBoxContainer/GameContainer" instance=ExtResource("2_nha0i")]
+[node name="GameBoard" parent="MarginContainer/VBoxContainer/HBoxContainer/GameContainer/GamePanel" instance=ExtResource("2_nha0i")]
 
 [node name="RightContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(440, 960)
