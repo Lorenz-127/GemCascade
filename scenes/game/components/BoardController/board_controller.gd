@@ -15,6 +15,10 @@ var grid_manager: GridManager
 var gem_manager: GemManager
 var match_detector: MatchDetector
 
+# Variables to track special gems
+var _queued_special_gems = []  # For tracking gems to create after matches
+var last_swap_position = Vector2i(-1, -1)  # Track swap position for special gem placement
+
 # State
 var current_state = GameState.WAITING_INPUT
 var chain_count = 0
@@ -23,6 +27,7 @@ func _ready():
 	pass
 
 func initialize(grid_mgr: GridManager, gem_mgr: GemManager, match_det: MatchDetector):
+	# Existing initialization code
 	grid_manager = grid_mgr
 	gem_manager = gem_mgr
 	match_detector = match_det
@@ -30,6 +35,13 @@ func initialize(grid_mgr: GridManager, gem_mgr: GemManager, match_det: MatchDete
 	# Connect to match detector signals
 	match_detector.connect("matches_found", _on_matches_found)
 	match_detector.connect("no_matches_found", _on_no_matches_found)
+	
+	# Connect to special match signals
+	match_detector.connect("special_match_detected", _on_special_match_detected)
+	match_detector.connect("match_4_detected", _on_match_4_detected)
+	match_detector.connect("match_5_detected", _on_match_5_detected)
+	match_detector.connect("match_6_detected", _on_match_6_detected)
+	match_detector.connect("match_7_plus_detected", _on_match_7_plus_detected)
 	
 	# Start in waiting input state
 	change_state(GameState.WAITING_INPUT)
@@ -48,6 +60,18 @@ func process_player_move(gem1, gem2):
 	var pos1 = find_gem_position(gem1)
 	var pos2 = find_gem_position(gem2)
 	
+	# Store the swap position for special gem creation
+	last_swap_position = pos1
+	
+	# Check if either gem is a special gem
+	var is_special_gem1 = gem_manager.is_special_gem(gem1)
+	var is_special_gem2 = gem_manager.is_special_gem(gem2)
+	
+	# If both are special gems, handle special combination
+	if is_special_gem1 and is_special_gem2:
+		await process_special_gem_combination(gem1, gem2, pos1, pos2)
+		return
+	
 	# Swap the gems in the grid data structure
 	swap_gems_in_grid(pos1, pos2)
 	
@@ -56,6 +80,18 @@ func process_player_move(gem1, gem2):
 	
 	# Emit signal to deselect the gem immediately after swap animation
 	emit_signal("swap_animation_completed")
+	
+	# Check if a special gem was activated
+	if is_special_gem1 or is_special_gem2:
+		# Activate the special gem
+		if is_special_gem1:
+			await activate_special_gem(gem1, pos2)  # Position after swap
+		else:
+			await activate_special_gem(gem2, pos1)  # Position after swap
+			
+		# Process the turn sequence
+		process_turn_sequence()
+		return
 	
 	# Continue with match checking and processing
 	if match_detector.check_board_for_matches():
@@ -133,6 +169,12 @@ func process_turn_sequence():
 	# Set game state to processing
 	change_state(GameState.PROCESSING)
 	
+	# Clear the special gem queue
+	_queued_special_gems = []
+	
+	# Set the last swap position in match detector to help determine special gem placement
+	match_detector.set_last_swap_position(last_swap_position)
+	
 	# Reset chain reaction counter
 	chain_count = 0
 	
@@ -142,15 +184,26 @@ func process_turn_sequence():
 	while continue_chain:
 		print("\n--- Chain reaction count: ", chain_count, " ---")
 		
-		# Emit signal to update score (ScoreManager will handle this)
-		# This would include the chain count
-		
 		# Remove matched gems
 		print("Removing matched gems...")
 		var removal_success = await remove_matched_gems()
 		print("Gem removal completed, success: ", removal_success)
 		
 		if removal_success:
+			# After removing matched gems, create any queued special gems
+			if _queued_special_gems.size() > 0:
+				print("Creating special gems: ", _queued_special_gems.size())
+				for special_gem_info in _queued_special_gems:
+					var pos = special_gem_info.position
+					gem_manager.convert_to_special_gem(
+						pos.x, pos.y, 
+						special_gem_info.special_type, 
+						special_gem_info.orientation
+					)
+				
+				# Clear the queue
+				_queued_special_gems = []
+			
 			# Increment chain counter for scoring purposes
 			chain_count += 1
 		
@@ -446,3 +499,228 @@ func _on_no_matches_found():
 	# Handle no matches found
 	print("No matches found")
 	# Check if we need to take any action
+
+# Handle special match detection
+func _on_special_match_detected(match_info):
+	# Just log the special match - specific handling done in length-specific handlers
+	print("Special match detected: ", match_info.special_gem_type)
+
+# Handle match-4 detection (Line Blast)
+func _on_match_4_detected(match_info):
+	print("Match-4 detected: Line Blast")
+	var special_pos = match_info.get("special_gem_position", match_info.positions[0])
+	
+	# Queue special gem creation for after current matches are processed
+	_queue_special_gem_creation(special_pos.x, special_pos.y, "line_blast", match_info.orientation)
+
+# Handle match-5 detection (Cross Blast)
+func _on_match_5_detected(match_info):
+	print("Match-5 detected: Cross Blast")
+	var special_pos = match_info.get("special_gem_position", match_info.positions[0])
+	
+	# Queue special gem creation
+	_queue_special_gem_creation(special_pos.x, special_pos.y, "cross_blast")
+
+# Handle match-6 detection (Color Bomb)
+func _on_match_6_detected(match_info):
+	print("Match-6 detected: Color Bomb")
+	var special_pos = match_info.get("special_gem_position", match_info.positions[0])
+	
+	# Queue special gem creation
+	_queue_special_gem_creation(special_pos.x, special_pos.y, "color_bomb")
+
+# Handle match-7+ detection (Super Bomb)
+func _on_match_7_plus_detected(match_info):
+	print("Match-7+ detected: Super Bomb")
+	var special_pos = match_info.get("special_gem_position", match_info.positions[0])
+	
+	# Queue special gem creation
+	_queue_special_gem_creation(special_pos.x, special_pos.y, "super_bomb")
+
+# Queue special gem creation for after current matches are processed
+func _queue_special_gem_creation(x: int, y: int, special_type: String, orientation: String = ""):
+	_queued_special_gems.append({
+		"position": Vector2i(x, y),
+		"special_type": special_type,
+		"orientation": orientation
+	})
+
+# Activate a special gem based on its type
+func activate_special_gem(gem, position: Vector2i):
+	print("Activating special gem: ", gem.special_type, " at ", position)
+	
+	# Call gem's activation animation
+	await gem.activate()
+	
+	# Process activation based on gem type
+	match gem.special_type:
+		"line_blast":
+			# Clear entire row or column based on orientation
+			await activate_line_blast(position.x, position.y, gem.orientation)
+		"cross_blast":
+			# Clear both row and column
+			await activate_cross_blast(position.x, position.y)
+		"color_bomb":
+			# Clear all gems of matching color
+			var target_color = gem.type  # Use gem's color as default
+			await activate_color_bomb(position.x, position.y, target_color)
+		"super_bomb":
+			# Clear a large area (radius blast)
+			await activate_super_bomb(position.x, position.y)
+	
+	# Mark the special gem itself as matched for removal
+	gem.matched = true
+	
+	return true
+
+# Handle special gem combination
+func process_special_gem_combination(gem1, gem2, pos1: Vector2i, pos2: Vector2i):
+	print("Processing special gem combination!")
+	
+	# Swap the gems in the grid data structure
+	swap_gems_in_grid(pos1, pos2)
+	
+	# Animate the swap
+	await animate_swap(gem1, gem2, pos1, pos2)
+	
+	# Emit signal to deselect the gem
+	emit_signal("swap_animation_completed")
+	
+	# Get types of both special gems
+	var type1 = gem1.special_type
+	var type2 = gem2.special_type
+	
+	# Combination effects based on gem types
+	# Line + Line = Cross Blast effect
+	if type1 == "line_blast" and type2 == "line_blast":
+		print("Line + Line combo: Cross blast effect!")
+		await activate_cross_blast(pos1.x, pos1.y)
+		await activate_cross_blast(pos2.x, pos2.y)
+	
+	# Line + Cross = Enhanced cross (larger area)
+	elif (type1 == "line_blast" and type2 == "cross_blast") or \
+		 (type1 == "cross_blast" and type2 == "line_blast"):
+		print("Line + Cross combo: Enhanced cross blast!")
+		await activate_cross_blast(pos1.x, pos1.y)
+		await activate_cross_blast(pos2.x, pos2.y)
+	
+	# Line + Color Bomb = Clear all gems in that row/column
+	elif (type1 == "line_blast" and type2 == "color_bomb") or \
+		 (type1 == "color_bomb" and type2 == "line_blast"):
+		print("Line + Color Bomb combo: Clear all in row/column!")
+		var line_gem = gem1 if type1 == "line_blast" else gem2
+		await activate_line_blast(pos1.x, pos1.y, line_gem.orientation)
+		await activate_color_bomb(pos2.x, pos2.y, gem1.type)
+	
+	# Cross + Color Bomb = Clear all gems in rows and columns
+	elif (type1 == "cross_blast" and type2 == "color_bomb") or \
+		 (type1 == "color_bomb" and type2 == "cross_blast"):
+		print("Cross + Color Bomb combo: Clear rows and columns!")
+		await activate_cross_blast(pos1.x, pos1.y)
+		await activate_color_bomb(pos2.x, pos2.y, gem1.type)
+	
+	# Color Bomb + Color Bomb = Clear entire board
+	elif type1 == "color_bomb" and type2 == "color_bomb":
+		print("Color Bomb + Color Bomb combo: Clear entire board!")
+		await activate_entire_board()
+	
+	# Any + Super Bomb = Enhanced area blast
+	elif type1 == "super_bomb" or type2 == "super_bomb":
+		print("Super Bomb combo: Enhanced area blast!")
+		await activate_super_bomb(pos1.x, pos1.y, 3)  # Larger radius
+	
+	# Mark both gems as matched for removal
+	gem1.matched = true
+	gem2.matched = true
+	
+	# Process the board after activation
+	process_turn_sequence()
+
+# Activate line blast effect (clear row or column)
+func activate_line_blast(x: int, y: int, orientation: String):
+	var dims = grid_manager.get_grid_dimensions()
+	
+	if orientation == "horizontal":
+		print("Activating horizontal line blast at row: ", y)
+		# Clear the entire row
+		for col in range(dims.x):
+			var gem = grid_manager.get_gem_at(col, y)
+			if gem != null and !gem.matched:
+				gem.matched = true
+	else:  # vertical
+		print("Activating vertical line blast at column: ", x)
+		# Clear the entire column
+		for row in range(dims.y):
+			var gem = grid_manager.get_gem_at(x, row)
+			if gem != null and !gem.matched:
+				gem.matched = true
+	
+	# Wait a moment for visual effect
+	await get_tree().create_timer(0.2).timeout
+
+# Activate cross blast effect (clear row and column)
+func activate_cross_blast(x: int, y: int):
+	print("Activating cross blast at: ", Vector2i(x, y))
+	
+	# Clear horizontal line
+	await activate_line_blast(x, y, "horizontal")
+	
+	# Clear vertical line
+	await activate_line_blast(x, y, "vertical")
+
+# Activate color bomb effect (clear all gems of target color)
+func activate_color_bomb(x: int, y: int, target_color: int):
+	print("Activating color bomb for color: ", target_color)
+	
+	var dims = grid_manager.get_grid_dimensions()
+	var gems_cleared = 0
+	
+	# Clear all gems of the target color
+	for col in range(dims.x):
+		for row in range(dims.y):
+			var gem = grid_manager.get_gem_at(col, row)
+			if gem != null and !gem.matched and gem.type == target_color:
+				gem.matched = true
+				gems_cleared += 1
+	
+	print("Color bomb cleared ", gems_cleared, " gems")
+	
+	# Wait a moment for visual effect
+	await get_tree().create_timer(0.2).timeout
+
+# Activate super bomb effect (clear gems in radius)
+func activate_super_bomb(x: int, y: int, radius: int = 2):
+	print("Activating super bomb at: ", Vector2i(x, y), " with radius: ", radius)
+	
+	var dims = grid_manager.get_grid_dimensions()
+	
+	# Clear gems in a radius around the position
+	for col in range(max(0, x - radius), min(dims.x, x + radius + 1)):
+		for row in range(max(0, y - radius), min(dims.y, y + radius + 1)):
+			# Calculate distance from center
+			var distance = Vector2i(col, row).distance_to(Vector2i(x, y))
+			
+			# If within radius, clear the gem
+			if distance <= radius:
+				var gem = grid_manager.get_gem_at(col, row)
+				if gem != null and !gem.matched:
+					gem.matched = true
+	
+	# Wait a moment for visual effect
+	await get_tree().create_timer(0.2).timeout
+
+# Activate entire board effect (clear all gems)
+func activate_entire_board():
+	print("Activating entire board clear!")
+	
+	var dims = grid_manager.get_grid_dimensions()
+	
+	# Mark all gems as matched
+	for col in range(dims.x):
+		for row in range(dims.y):
+			var gem = grid_manager.get_gem_at(col, row)
+			if gem != null and !gem.matched:
+				gem.matched = true
+	
+	# Wait a moment for visual effect
+	await get_tree().create_timer(0.3).timeout
