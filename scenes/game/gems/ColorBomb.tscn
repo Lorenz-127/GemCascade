@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://bqsq3bgeu6hot"]
+
+[ext_resource type="Texture2D" uid="uid://6ytp2b1ou6h8" path="res://assets/components/GemManager/specials/color_bomb.svg" id="1_3sbq2"]
+[ext_resource type="Script" uid="uid://xy84o23qdsuq" path="res://scenes/game/gems/color_bomb.gd" id="1_rfxh0"]
+
+[node name="ColorBomb" type="Node2D"]
+script = ExtResource("1_rfxh0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_3sbq2")

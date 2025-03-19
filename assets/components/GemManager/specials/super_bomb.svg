@@ -1,0 +1,23 @@
+<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Base gem -->
+  <polygon points="32,4 60,32 32,60 4,32" fill="url(#gemGradient)" />
+  
+  <!-- Explosion pattern -->
+  <g fill="white" opacity="0.7">
+    <!-- Major explosion rays -->
+    <polygon points="32,32 36,4 28,4" />
+    <polygon points="32,32 60,28 60,36" />
+    <polygon points="32,32 36,60 28,60" />
+    <polygon points="32,32 4,28 4,36" />
+    
+    <!-- Minor rays at 45-degree angles -->
+    <polygon points="32,32 50,14 46,10" />
+    <polygon points="32,32 50,50 46,54" />
+    <polygon points="32,32 14,50 10,46" />
+    <polygon points="32,32 14,14 10,10" />
+  </g>
+  
+  <!-- Center explosive core -->
+  <circle cx="32" cy="32" r="12" fill="url(#explosionGradient)" />
+  <circle cx="32" cy="32" r="6" fill="white" opacity="0.9" />
+</svg>

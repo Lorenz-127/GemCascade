@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://d4ctcjm08rwpg"]
+
+[ext_resource type="Texture2D" uid="uid://c7bw0spxpgxu5" path="res://assets/components/GemManager/specials/line_blast_v.svg" id="1_8j2ux"]
+[ext_resource type="Script" uid="uid://dqguuc3xwrync" path="res://scenes/game/gems/line_blast_v.gd" id="1_lhwdb"]
+
+[node name="LineBlastV" type="Node2D"]
+script = ExtResource("1_lhwdb")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_8j2ux")
