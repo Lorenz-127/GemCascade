@@ -74,7 +74,7 @@ BoardController → signals score update → ScoreManager
 
 ### Requirements
 
-- Godot Engine 4.0 or higher
+- Godot Engine 4.4
 
 ### Installation
 
@@ -87,49 +87,27 @@ BoardController → signals score update → ScoreManager
 
 The project is currently entering Sprint 3, which will focus on:
 
-- Special gem implementation (line-blast, color-bomb)
-- Special gem effects and combinations
-- Advanced match patterns (L, T, + shapes)
-- Classic mode implementation
-- Score tracking enhancements
+-[ ] Special gem implementation (line-blast, color-bomb)
+-[ ] Special gem effects and combinations
+-[ ] Advanced match patterns (L, T, + shapes)
+-[ ] Classic mode implementation
+-[ ] Score tracking enhancements
 
 Future plans include:
 - Timed mode implementation
-- Endless/Zen mode
+- More Game modes (Endless, Zen, etc...)
 - Progressive difficulty system
 - Additional special gem types
 - Achievements system
 - User profiles and high scores
 
-## Project Structure
-
-```
-scenes/
-  game/
-    components/
-      GridManager/
-      GemManager/
-      InputHandler/
-      MatchDetector/
-      BoardController/
-      ScoreManager/
-    GameBoard.tscn  # Main game scene
-resources/
-  assets/
-    gems/           # Gem sprites
-    ui/             # UI elements
-    effects/        # Visual effects
-  audio/
-    music/          # Background music
-    sfx/            # Sound effects
-scripts/
-  utils/            # Utility classes and functions
-```
-
 ## Credits
 
 Developed by [Lorenz B.]
 
+## License
+
+[MIT](docs/LICENSE.txt)
 ---
 
 © 2025 [Kalgorian Game Studio]
