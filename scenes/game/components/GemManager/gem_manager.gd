@@ -10,13 +10,16 @@ var game_board
 
 # Gem types
 var possible_gems = []
+var special_gem_scenes = {}
 var gem_pool = []  # For object pooling
 
 func _ready():
-	game_board = get_parent()
+	grid_manager = get_parent()  # GemManager's parent is GridManager
+	game_board = grid_manager.get_parent()  # GridManager's parent is GameBoard
+	initialize()
 
 func initialize():
-	grid_manager = get_parent()
+	# Existing initialization code...
 	
 	# Load gem scenes
 	possible_gems = [
@@ -30,6 +33,15 @@ func initialize():
 	
 	# Initialize the gem pool
 	initialize_gem_pool()
+	
+	# Load special gem scenes
+	special_gem_scenes = {
+		"line_blast_h": preload("res://scenes/game/gems/LineBlastH.tscn"),
+		"line_blast_v": preload("res://scenes/game/gems/LineBlastV.tscn"),
+		"cross_blast": preload("res://scenes/game/gems/CrossBlast.tscn"),
+		"color_bomb": preload("res://scenes/game/gems/ColorBomb.tscn"),
+		"super_bomb": preload("res://scenes/game/gems/SuperBomb.tscn")
+	}
 
 # Initialize the gem pool with some gems of each type
 func initialize_gem_pool():
@@ -148,3 +160,80 @@ func get_valid_gem_types(column: int, row: int) -> Array:
 # Returns the number of different gem types
 func get_gem_types_count() -> int:
 	return possible_gems.size()
+
+# Create a special gem at the specified position
+func create_special_gem(special_type: String, column: int, row: int, orientation: String = ""):
+	var scene_key = special_type
+	
+	# Handle line blast orientation
+	if special_type == "line_blast":
+		if orientation == "horizontal":
+			scene_key = "line_blast_h"
+		else:
+			scene_key = "line_blast_v"
+	
+	# Get the special gem scene
+	var gem_scene = special_gem_scenes.get(scene_key)
+	if gem_scene == null:
+		print("ERROR: Unknown special gem type: ", special_type, " orientation: ", orientation)
+		return null
+	
+	# Create the special gem instance
+	var new_gem = gem_scene.instantiate()
+	
+	# Set the gem position
+	var cell_size = grid_manager.cell_size
+	var pos = Vector2(column * cell_size, row * cell_size)
+	pos.x += cell_size / 2
+	pos.y += cell_size / 2
+	new_gem.position = pos
+	
+	# Scale appropriately
+	var scale_factor = (grid_manager.cell_size - 2) / 64.0
+	new_gem.scale = Vector2(scale_factor, scale_factor)
+	
+	# Store in the grid
+	grid_manager.set_gem_at(column, row, new_gem)
+	
+	# Add to scene
+	add_child(new_gem)
+	
+	return new_gem
+
+# Convert a regular gem to a special gem
+func convert_to_special_gem(column: int, row: int, special_type: String, orientation: String = ""):
+	# Remove existing gem
+	var existing_gem = grid_manager.get_gem_at(column, row)
+	if existing_gem != null:
+		# Get the gem type to preserve
+		var gem_type = existing_gem.type
+		
+		# Remove from grid and scene
+		grid_manager.set_gem_at(column, row, null)
+		existing_gem.queue_free()
+		
+		# Create special gem
+		var special_gem = create_special_gem(special_type, column, row, orientation)
+		if special_gem != null:
+			# Preserve original gem type
+			special_gem.type = gem_type
+			
+			return special_gem
+	
+	return null
+
+# Check if a gem is a special gem
+func is_special_gem(gem) -> bool:
+	return gem != null and gem.get("special_type") != null and gem.special_type != ""
+
+# Get the special gem type (useful for debugging and logic)
+func get_special_gem_type(gem) -> String:
+	if is_special_gem(gem):
+		return gem.special_type
+	return ""
+
+# Get the special gem orientation (for line blast gems)
+func get_special_gem_orientation(gem) -> String:
+	if is_special_gem(gem):
+		return gem.orientation
+	return ""
