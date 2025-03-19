@@ -2,7 +2,7 @@
 
 A modern implementation of the classic match-3 puzzle game in Godot Engine.
 
-![GemCascade Game](https://via.placeholder.com/800x450.png?text=GemCascade+Screenshot)
+![GemCascade Game](docs/gemcascade-gameview.png)
 
 ## About the Game
 
