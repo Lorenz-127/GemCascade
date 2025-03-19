@@ -4,6 +4,13 @@ extends Node
 # Signals
 signal matches_found(matches)
 signal no_matches_found()
+# signals for specific match lengths
+signal match_4_detected(match_info)
+signal match_5_detected(match_info)
+signal match_6_detected(match_info)
+signal match_7_plus_detected(match_info)
+# Generic signal for any special match
+signal special_match_detected(match_info)
 
 # References
 var grid_manager: GridManager
@@ -11,13 +18,23 @@ var gem_manager: GemManager
 
 # Internal state
 var current_matches = []
+var last_swap_position = Vector2i(-1, -1) # Track the last swap position for special gem placement
 
 func _ready():
 	pass
 
+# Initialize the match detector with grid and gem managers
 func initialize(grid_mgr: GridManager, gem_mgr: GemManager):
 	grid_manager = grid_mgr
 	gem_manager = gem_mgr
+
+# Set the last swap position (called by InputHandler or BoardController)
+func set_last_swap_position(pos: Vector2i):
+	last_swap_position = pos
+
+# Get the last swap position
+func get_last_swap_position() -> Vector2i:
+	return last_swap_position
 
 # Checks for matches at a specific position
 func check_for_matches_at(x: int, y: int) -> bool:
@@ -241,6 +258,83 @@ func mark_matched_gems():
 		
 	return found_matches
 
+# Process a match of any length
+func process_match(positions: Array, gem_type: int, orientation: String):
+	var match_length = positions.size()
+	
+	# Mark all gems in the match as matched
+	for pos in positions:
+		var gem = grid_manager.get_gem_at(pos.x, pos.y)
+		if gem != null:
+			gem.matched = true
+	
+	# Create match info with enhanced data
+	var match_data = {
+		"type": gem_type,
+		"positions": positions,
+		"orientation": orientation,
+		"length": match_length,
+		"special_gem_type": determine_special_gem_type(match_length)
+	}
+	
+	# Add the swap position to match info if it's part of this match
+	if positions.has(last_swap_position):
+		match_data["swap_position"] = last_swap_position
+	elif last_swap_position != Vector2i(-1, -1):
+		# Find the closest position to the swap position
+		var closest_pos = positions[0]
+		var min_distance = closest_pos.distance_to(last_swap_position)
+		
+		for pos in positions:
+			var dist = pos.distance_to(last_swap_position)
+			if dist < min_distance:
+				min_distance = dist
+				closest_pos = pos
+		
+		match_data["special_gem_position"] = closest_pos
+	else:
+		# If no swap position is set, use the first position
+		match_data["special_gem_position"] = positions[0]
+	
+	# Add to current matches
+	current_matches.append(match_data)
+	
+	# Emit signals based on match length
+	match match_length:
+		4:
+			emit_signal("match_4_detected", match_data)
+		5:
+			emit_signal("match_5_detected", match_data)
+		6:
+			emit_signal("match_6_detected", match_data)
+		_:
+			if match_length >= 7:
+				emit_signal("match_7_plus_detected", match_data)
+	
+	# Emit generic special match signal for matches of length 4+
+	if match_length >= 4:
+		emit_signal("special_match_detected", match_data)
+
+# Determine special gem type based on match length
+func determine_special_gem_type(match_length: int) -> String:
+	match match_length:
+		4:
+			return "line_blast"
+		5:
+			return "cross_blast"
+		6:
+			return "color_bomb"
+		_:
+			if match_length >= 7:
+				return "super_bomb"
+			else:
+				return "none"
+
 # Returns information about current matches
 func get_matches() -> Array:
 	return current_matches
+
+# Reset the match detector state
+func reset():
+	current_matches = []
+	last_swap_position = Vector2i(-1, -1)
