@@ -46,7 +46,7 @@ func initialize_gem_pool():
 func get_gem_from_pool(type: int):
 	# Look for an existing gem of the requested type
 	for gem in gem_pool:
-		if not gem.visible and gem.type == type:
+		if is_instance_valid(gem) and not gem.visible and gem.type == type:
 			gem.visible = true
 			return gem
 	
@@ -57,10 +57,24 @@ func get_gem_from_pool(type: int):
 	gem_pool.append(new_gem)
 	return new_gem
 
+# Clean up the gem pool by removing invalid references
+func cleanup_gem_pool():
+	var valid_gems = []
+	for gem in gem_pool:
+		if is_instance_valid(gem):
+			valid_gems.append(gem)
+	
+	print("Cleaned pool: removed ", gem_pool.size() - valid_gems.size(), " invalid gems")
+	gem_pool = valid_gems
+
 # Return a gem to the pool
 func return_gem_to_pool(gem):
-	gem.visible = false
-	# Reset any gem state as needed
+	if is_instance_valid(gem):
+		gem.visible = false
+		# Reset any gem state as needed
+	else:
+		# If we're trying to return an invalid gem, cleanup the pool
+		cleanup_gem_pool()
 
 # Creates a gem of the specified type at the grid position
 func create_gem(type: int, column: int, row: int):
