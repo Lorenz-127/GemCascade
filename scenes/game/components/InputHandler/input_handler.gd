@@ -101,6 +101,10 @@ func handle_selection():
 				# Same gem clicked, just deselect
 				deselect_current_gem()
 
+# Call this function after a swap has been completed
+func on_swap_completed():
+	deselect_current_gem()
+
 # Check if two gems are adjacent
 func are_adjacent(gem1, gem2) -> bool:
 	var pos1 = find_gem_position(gem1)

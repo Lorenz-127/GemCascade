@@ -40,7 +40,9 @@ func connect_signals():
 	
 	# BoardController signals
 	board_controller.connect("game_state_changed", _on_game_state_changed)
-	board_controller.connect("board_processing_complete", _on_board_processing_complete)
+	board_controller.connect("swap_animation_completed", input_handler.on_swap_completed)
+	board_controller.connect("invalid_swap_completed", input_handler.on_swap_completed)
+	board_controller.connect("board_processing_complete", input_handler.on_swap_completed)
 	
 	# MatchDetector signals
 	match_detector.connect("matches_found", _on_matches_found)

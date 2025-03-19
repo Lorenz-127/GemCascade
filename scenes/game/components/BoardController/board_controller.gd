@@ -7,6 +7,8 @@ enum GameState {WAITING_INPUT, GEM_SELECTED, PROCESSING, GAME_OVER}
 # Signals
 signal game_state_changed(state)
 signal board_processing_complete()
+signal invalid_swap_completed
+signal swap_animation_completed
 
 # References
 var grid_manager: GridManager
@@ -52,7 +54,10 @@ func process_player_move(gem1, gem2):
 	# Animate the swap
 	await animate_swap(gem1, gem2, pos1, pos2)
 	
-	# Check if this swap created any matches
+	# Emit signal to deselect the gem immediately after swap animation
+	emit_signal("swap_animation_completed")
+	
+	# Continue with match checking and processing
 	if match_detector.check_board_for_matches():
 		# Found matches, mark them for visual feedback
 		match_detector.mark_matched_gems()
@@ -120,6 +125,7 @@ func swap_gems_back(pos1: Vector2i, pos2: Vector2i):
 	
 	# Return to waiting state
 	change_state(GameState.WAITING_INPUT)
+	emit_signal("invalid_swap_completed")
 
 # Process the full turn sequence
 func process_turn_sequence():
