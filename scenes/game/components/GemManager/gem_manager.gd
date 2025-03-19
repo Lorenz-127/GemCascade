@@ -19,8 +19,6 @@ func _ready():
 	initialize()
 
 func initialize():
-	# Existing initialization code...
-	
 	# Load gem scenes
 	possible_gems = [
 		preload("res://scenes/game/gems/RedGem.tscn"),
@@ -172,10 +170,14 @@ func create_special_gem(special_type: String, column: int, row: int, orientation
 		else:
 			scene_key = "line_blast_v"
 	
+	print("GemManager: Creating special gem with scene key: ", scene_key)
+	
 	# Get the special gem scene
 	var gem_scene = special_gem_scenes.get(scene_key)
 	if gem_scene == null:
 		print("ERROR: Unknown special gem type: ", special_type, " orientation: ", orientation)
+		# Debug the available keys
+		print("Available scene keys: ", special_gem_scenes.keys())
 		return null
 	
 	# Create the special gem instance
@@ -202,11 +204,14 @@ func create_special_gem(special_type: String, column: int, row: int, orientation
 
 # Convert a regular gem to a special gem
 func convert_to_special_gem(column: int, row: int, special_type: String, orientation: String = ""):
+	print("GemManager: Converting to special gem: ", special_type, " at ", Vector2i(column, row))
+	
 	# Remove existing gem
 	var existing_gem = grid_manager.get_gem_at(column, row)
 	if existing_gem != null:
 		# Get the gem type to preserve
 		var gem_type = existing_gem.type
+		print("GemManager: Existing gem type: ", gem_type)
 		
 		# Remove from grid and scene
 		grid_manager.set_gem_at(column, row, null)
@@ -217,8 +222,12 @@ func convert_to_special_gem(column: int, row: int, special_type: String, orienta
 		if special_gem != null:
 			# Preserve original gem type
 			special_gem.type = gem_type
-			
+			print("GemManager: Special gem created successfully with type: ", special_gem.type)
 			return special_gem
+		else:
+			print("GemManager: FAILED to create special gem")
+	else:
+		print("GemManager: No existing gem at position")
 	
 	return null
 

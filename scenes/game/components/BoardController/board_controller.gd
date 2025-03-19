@@ -32,6 +32,9 @@ func initialize(grid_mgr: GridManager, gem_mgr: GemManager, match_det: MatchDete
 	gem_manager = gem_mgr
 	match_detector = match_det
 	
+	# Add debug print
+	print("BoardController: Connecting signals...")
+	
 	# Connect to match detector signals
 	match_detector.connect("matches_found", _on_matches_found)
 	match_detector.connect("no_matches_found", _on_no_matches_found)
@@ -42,6 +45,8 @@ func initialize(grid_mgr: GridManager, gem_mgr: GemManager, match_det: MatchDete
 	match_detector.connect("match_5_detected", _on_match_5_detected)
 	match_detector.connect("match_6_detected", _on_match_6_detected)
 	match_detector.connect("match_7_plus_detected", _on_match_7_plus_detected)
+	
+	print("BoardController: Signal connections complete")
 	
 	# Start in waiting input state
 	change_state(GameState.WAITING_INPUT)

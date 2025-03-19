@@ -97,3 +97,31 @@ func _on_matches_found(matches):
 	if matched_gems_count >= 3:
 		var chain_level = board_controller.chain_count
 		score_manager.update_score_for_matches(matched_gems_count, chain_level)
+
+# Debug function
+func _input(event):
+	# Test special gem creation with keyboard shortcuts
+	if event is InputEventKey and event.pressed:
+		# Press 1 for Line Blast H
+		if event.keycode == KEY_1:
+			print("TEST: Creating horizontal line blast gem")
+			var center_pos = Vector2i(4, 4)  # Center of board
+			gem_manager.convert_to_special_gem(center_pos.x, center_pos.y, "line_blast", "horizontal")
+		
+		# Press 2 for Line Blast V  
+		elif event.keycode == KEY_2:
+			print("TEST: Creating vertical line blast gem")
+			var center_pos = Vector2i(4, 4)  # Center of board
+			gem_manager.convert_to_special_gem(center_pos.x, center_pos.y, "line_blast", "vertical")
+		
+		# Press 3 for Cross Blast
+		elif event.keycode == KEY_3:
+			print("TEST: Creating cross blast gem")
+			var center_pos = Vector2i(4, 4)  # Center of board
+			gem_manager.convert_to_special_gem(center_pos.x, center_pos.y, "cross_blast")
+		
+		# Press 4 for Color Bomb
+		elif event.keycode == KEY_4:
+			print("TEST: Creating color bomb gem")
+			var center_pos = Vector2i(4, 4)  # Center of board
+			gem_manager.convert_to_special_gem(center_pos.x, center_pos.y, "color_bomb")

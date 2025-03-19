@@ -108,12 +108,13 @@ func check_board_for_matches() -> bool:
 	return false
 
 # Marks all matched gems for removal
+# Marks all matched gems for removal and identifies special matches
 func mark_matched_gems():
 	var found_matches = false
-	var match_info = []
 	var dims = grid_manager.get_grid_dimensions()
 	
-	# Clear previous match state
+	# Clear previous match state and current matches array
+	current_matches = []
 	for x in range(dims.x):
 		for y in range(dims.y):
 			var gem = grid_manager.get_gem_at(x, y)
@@ -132,16 +133,9 @@ func mark_matched_gems():
 				if current_type == -1 or gem.type != current_type:
 					# Process any prior match
 					if current_match.size() >= 3:
+						# Use process_match instead of directly handling here
+						process_match(current_match, current_type, "horizontal")
 						found_matches = true
-						for match_pos in current_match:
-							var match_gem = grid_manager.get_gem_at(match_pos.x, match_pos.y)
-							match_gem.matched = true
-						
-						match_info.append({
-							"type": current_type,
-							"positions": current_match,
-							"orientation": "horizontal"
-						})
 					
 					# Start a new potential match
 					current_match = [Vector2i(x, y)]
@@ -152,16 +146,9 @@ func mark_matched_gems():
 			else:
 				# Process any prior match before gap
 				if current_match.size() >= 3:
+					# Use process_match instead of directly handling here
+					process_match(current_match, current_type, "horizontal")
 					found_matches = true
-					for match_pos in current_match:
-						var match_gem = grid_manager.get_gem_at(match_pos.x, match_pos.y)
-						match_gem.matched = true
-					
-					match_info.append({
-						"type": current_type,
-						"positions": current_match,
-						"orientation": "horizontal"
-					})
 				
 				# Reset for next potential match
 				current_match = []
@@ -169,16 +156,9 @@ func mark_matched_gems():
 		
 		# End of row, check for match
 		if current_match.size() >= 3:
+			# Use process_match instead of directly handling here
+			process_match(current_match, current_type, "horizontal")
 			found_matches = true
-			for match_pos in current_match:
-				var match_gem = grid_manager.get_gem_at(match_pos.x, match_pos.y)
-				match_gem.matched = true
-			
-			match_info.append({
-				"type": current_type,
-				"positions": current_match,
-				"orientation": "horizontal"
-			})
 	
 	# Check vertical matches
 	for x in range(dims.x):
@@ -188,20 +168,13 @@ func mark_matched_gems():
 		for y in range(dims.y):
 			var gem = grid_manager.get_gem_at(x, y)
 			
-			if gem != null:
+			if gem != null and !gem.matched:
 				if current_type == -1 or gem.type != current_type:
 					# Process any prior match
 					if current_match.size() >= 3:
+						# Use process_match instead of directly handling here
+						process_match(current_match, current_type, "vertical")
 						found_matches = true
-						for match_pos in current_match:
-							var match_gem = grid_manager.get_gem_at(match_pos.x, match_pos.y)
-							match_gem.matched = true
-						
-						match_info.append({
-							"type": current_type,
-							"positions": current_match,
-							"orientation": "vertical"
-						})
 					
 					# Start a new potential match
 					current_match = [Vector2i(x, y)]
@@ -212,16 +185,9 @@ func mark_matched_gems():
 			else:
 				# Process any prior match before gap
 				if current_match.size() >= 3:
+					# Use process_match instead of directly handling here
+					process_match(current_match, current_type, "vertical")
 					found_matches = true
-					for match_pos in current_match:
-						var match_gem = grid_manager.get_gem_at(match_pos.x, match_pos.y)
-						match_gem.matched = true
-					
-					match_info.append({
-						"type": current_type,
-						"positions": current_match,
-						"orientation": "vertical"
-					})
 				
 				# Reset for next potential match
 				current_match = []
@@ -229,16 +195,9 @@ func mark_matched_gems():
 		
 		# End of column, check for match
 		if current_match.size() >= 3:
+			# Use process_match instead of directly handling here
+			process_match(current_match, current_type, "vertical")
 			found_matches = true
-			for match_pos in current_match:
-				var match_gem = grid_manager.get_gem_at(match_pos.x, match_pos.y)
-				match_gem.matched = true
-			
-			match_info.append({
-				"type": current_type,
-				"positions": current_match,
-				"orientation": "vertical"
-			})
 	
 	# Apply visual effect to matched gems
 	for x in range(dims.x):
@@ -247,12 +206,9 @@ func mark_matched_gems():
 			if gem != null and gem.matched:
 				gem.modulate = Color(1, 1, 1, 0.6)  # Semi-transparent
 	
-	# Store current matches for later reference
-	current_matches = match_info
-	
 	# Emit signal based on result
 	if found_matches:
-		emit_signal("matches_found", match_info)
+		emit_signal("matches_found", current_matches)
 	else:
 		emit_signal("no_matches_found")
 		
@@ -261,6 +217,9 @@ func mark_matched_gems():
 # Process a match of any length
 func process_match(positions: Array, gem_type: int, orientation: String):
 	var match_length = positions.size()
+	
+	# Debug print
+	print("MatchDetector: Processing match of length " + str(match_length) + " with orientation " + orientation)
 	
 	# Mark all gems in the match as matched
 	for pos in positions:
@@ -276,6 +235,9 @@ func process_match(positions: Array, gem_type: int, orientation: String):
 		"length": match_length,
 		"special_gem_type": determine_special_gem_type(match_length)
 	}
+	
+	# Debug print special gem type
+	print("MatchDetector: Special gem type determined: " + match_data["special_gem_type"])
 	
 	# Add the swap position to match info if it's part of this match
 	if positions.has(last_swap_position):
