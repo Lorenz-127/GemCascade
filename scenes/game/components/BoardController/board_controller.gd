@@ -174,9 +174,6 @@ func process_turn_sequence():
 	# Set game state to processing
 	change_state(GameState.PROCESSING)
 	
-	# Clear the special gem queue
-	_queued_special_gems = []
-	
 	# Set the last swap position in match detector to help determine special gem placement
 	match_detector.set_last_swap_position(last_swap_position)
 	
@@ -196,10 +193,12 @@ func process_turn_sequence():
 		
 		if removal_success:
 			# After removing matched gems, create any queued special gems
+			print("==== PROCESSING SPECIAL GEM QUEUE, SIZE: ", _queued_special_gems.size(), " ====")
 			if _queued_special_gems.size() > 0:
 				print("Creating special gems: ", _queued_special_gems.size())
 				for special_gem_info in _queued_special_gems:
 					var pos = special_gem_info.position
+					print("Converting gem at position ", pos)
 					gem_manager.convert_to_special_gem(
 						pos.x, pos.y, 
 						special_gem_info.special_type, 
@@ -245,6 +244,10 @@ func process_turn_sequence():
 			print("No gems removed - ending process")
 			continue_chain = false
 	
+	# Important: Reset last_swap_position after the turn sequence is complete
+	last_swap_position = Vector2i(-1, -1)
+	match_detector.set_last_swap_position(Vector2i(-1, -1))
+	
 	# Turn sequence complete, return to waiting state
 	print("=== TURN SEQUENCE COMPLETE ===")
 	change_state(GameState.WAITING_INPUT)
@@ -257,13 +260,25 @@ func remove_matched_gems():
 	# Track gems to be removed
 	var gems_to_remove = []
 	
+	# Create a list of positions where special gems should be created
+	var special_positions = []
+	for special_info in _queued_special_gems:
+		special_positions.append(special_info.position)
+	
 	# Find all matched gems
 	var dims = grid_manager.get_grid_dimensions()
 	for x in range(dims.x):
 		for y in range(dims.y):
 			var gem = grid_manager.get_gem_at(x, y)
+			var pos = Vector2i(x, y)
+			
 			if gem != null and gem.matched:
-				gems_to_remove.append({"gem": gem, "position": Vector2i(x, y)})
+				# Skip gems that should become special gems
+				if special_positions.has(pos):
+					print("Skipping matched gem at ", pos, " - will become special gem")
+					continue
+				
+				gems_to_remove.append({"gem": gem, "position": pos})
 				
 				# Clear the grid position
 				grid_manager.set_gem_at(x, y, null)
@@ -286,8 +301,6 @@ func remove_matched_gems():
 	
 	# Free the gem instances
 	for gem_data in gems_to_remove:
-		# You might want to return gems to a pool instead of freeing them
-		# if you implement object pooling fully
 		gem_data.gem.queue_free()
 	
 	return true
@@ -512,7 +525,7 @@ func _on_special_match_detected(match_info):
 
 # Handle match-4 detection (Line Blast)
 func _on_match_4_detected(match_info):
-	print("Match-4 detected: Line Blast")
+	print("==== MATCH 4 DETECTED HANDLER CALLED ====")
 	var special_pos = match_info.get("special_gem_position", match_info.positions[0])
 	
 	# Queue special gem creation for after current matches are processed
