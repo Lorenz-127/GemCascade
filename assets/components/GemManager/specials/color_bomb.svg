@@ -1,0 +1,28 @@
+<svg width="64" height="64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define rainbow gradient -->
+  <defs>
+    <radialGradient id="rainbowGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="white" />
+      <stop offset="20%" stop-color="#ff6b6b" /> <!-- Red -->
+      <stop offset="40%" stop-color="#ffb14d" /> <!-- Orange -->
+      <stop offset="60%" stop-color="#b4d89c" /> <!-- Green -->
+      <stop offset="80%" stop-color="#7fa5c2" /> <!-- Blue -->
+      <stop offset="100%" stop-color="#c77dff" /> <!-- Purple -->
+    </radialGradient>
+  </defs>
+  
+  <!-- Circle base instead of a diamond -->
+  <circle cx="32" cy="32" r="28" fill="url(#rainbowGradient)" />
+  
+  <!-- Swirling/radiating pattern -->
+  <g opacity="0.7" fill="none" stroke="white" stroke-width="1.5">
+    <circle cx="32" cy="32" r="24" />
+    <circle cx="32" cy="32" r="20" />
+    <circle cx="32" cy="32" r="16" />
+    <circle cx="32" cy="32" r="12" />
+    <circle cx="32" cy="32" r="8" />
+  </g>
+  
+  <!-- Center point -->
+  <circle cx="32" cy="32" r="4" fill="white" />
+</svg>
